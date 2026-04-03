@@ -1,2 +1,3 @@
 CSC 307 React Project
-README to be improved
+Alex Hanus
+amhanus@calpoly.edu
