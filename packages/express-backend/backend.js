@@ -1,5 +1,6 @@
 // backend.js
 import express from "express";
+import cors from "cors";
 
 const app = express();
 const port = 8000;
@@ -34,7 +35,9 @@ const users = {
   ]
 };
 
+app.use(cors());
 app.use(express.json());
+
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -54,11 +57,26 @@ const addUser = (user) => {
   return user;
 };
 
+const deleteUser = (user) => {
+  const index = users["users_list"].findIndex(u => u.id === user.id);
+  users["users_list"].splice(index,1);
+}
+
+app.delete("/users/:id", (req, res) => {
+  const id = req.params.id;
+  let result = findUserById(id);
+  deleteUser(result);
+  res.send();
+})
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd);
-  res.send();
+  if (userToAdd ===  undefined){
+    res.status(400).send('Bad request');
+  } else {
+    addUser(userToAdd);
+    res.status(201).send();
+  }
 });
 
 app.get("/users", (req, res) => {
