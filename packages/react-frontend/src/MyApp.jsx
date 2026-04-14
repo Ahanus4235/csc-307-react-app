@@ -7,7 +7,9 @@ function MyApp() {
   const [characters, setCharacters] = useState([]);
 
   function removeOneCharacter(index) {
+
     const updated = characters.filter((character, i) => {
+      
       return i !== index;
     });
     setCharacters(updated);
@@ -44,7 +46,14 @@ function MyApp() {
 
   function updateList(person) { 
     postUser(person)
-      .then(() => setCharacters([...characters, person]))
+      .then((res) => {
+        if (res.status!=201 )
+          throw new Error("POST Error");
+        else
+          res.json().then((data) => 
+          setCharacters([...characters , data]))
+      })
+      //.then(() => setCharacters([...characters, person]))
       .catch((error) => {
         console.log(error);
       })

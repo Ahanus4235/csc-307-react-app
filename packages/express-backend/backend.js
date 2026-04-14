@@ -52,7 +52,15 @@ const findUserByName = (name) => {
 const findUserById = (id) =>
   users["users_list"].find((user) => user["id"] === id);
 
+const generateId = (user) =>{
+  const newId = Math.round(Math.random() * 1000000);
+  let updates = { id: newId };
+  user = { ...user, ...updates };
+  return user;
+}
+
 const addUser = (user) => {
+  user=generateId(user);
   users["users_list"].push(user);
   return user;
 };
@@ -71,11 +79,11 @@ app.delete("/users/:id", (req, res) => {
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  if (userToAdd ===  undefined){
+  if (userToAdd === undefined){
     res.status(400).send('Bad request');
   } else {
-    addUser(userToAdd);
-    res.status(201).send();
+    const newUser = addUser(userToAdd);
+    res.status(201).json(newUser);
   }
 });
 
