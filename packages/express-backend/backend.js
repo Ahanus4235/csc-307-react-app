@@ -53,7 +53,7 @@ const findUserById = (id) =>
   users["users_list"].find((user) => user["id"] === id);
 
 const generateId = (user) =>{
-  const newId = Math.round(Math.random() * 1000000);
+  const newId = Math.round(Math.random() * 1000000).toString();
   let updates = { id: newId };
   user = { ...user, ...updates };
   return user;
@@ -67,19 +67,27 @@ const addUser = (user) => {
 
 const deleteUser = (user) => {
   const index = users["users_list"].findIndex(u => u.id === user.id);
-  users["users_list"].splice(index,1);
+  if (index==-1)
+    return -1;
+  else{
+    users["users_list"].splice(index,1);
+    return 0;
+  }
 }
 
 app.delete("/users/:id", (req, res) => {
   const id = req.params.id;
   let result = findUserById(id);
-  deleteUser(result);
-  res.send();
+  let indicator = deleteUser(result);
+  if (indicator==0)
+    res.status(204).send();
+  else
+    res.status(404).send();
 })
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  if (userToAdd === undefined){
+  if (userToAdd === undefined){//Is this a good way to check a bad post?
     res.status(400).send('Bad request');
   } else {
     const newUser = addUser(userToAdd);
