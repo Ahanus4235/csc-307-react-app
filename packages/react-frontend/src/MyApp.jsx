@@ -1,22 +1,81 @@
 // src/MyApp.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Table from "./Table";
 import Form from "./Form";
 
 function MyApp() {
   const [characters, setCharacters] = useState([]);
-
-  function removeOneCharacter(index) {
-    const updated = characters.filter((character, i) => {
-      return i !== index;
+  
+  function deleteUser(person, id) {
+    console.log(person);
+    const promise = fetch("Http://localhost:8000/users/"+id, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(person),
     });
-    setCharacters(updated);
+
+    return promise;
   }
 
-  function updateList(person) {
-  setCharacters([...characters, person]);
-  
-}
+  function removeOneCharacter(index) {
+
+    const charToRemove = characters.filter((character, i) => {
+      return i === index;
+    });
+
+
+    deleteUser(charToRemove, characters[index]._id)
+    .then((res) => {
+      if (res.status==204){
+        const updated = characters.filter((character, i) => {
+          return i !== index;
+    });
+      setCharacters(updated);
+      }
+    })
+    .catch((error) => {console.log(error);});
+  }
+
+  function fetchUsers() {
+    const promise = fetch("http://localhost:8000/users");
+    return promise;
+  }
+
+  useEffect(() => {
+  fetchUsers()
+	  .then((res) => res.json())
+	  .then((json) => setCharacters(json["users_list"]))
+	  .catch((error) => { console.log(error); });
+}, [] );
+
+  function postUser(person) {
+    const promise = fetch("Http://localhost:8000/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(person),
+    });
+
+    return promise;
+  }
+
+  function updateList(person) { 
+    postUser(person)
+      .then((res) => {
+        if (res.status!=201 )
+          throw new Error("POST Error");
+        else
+          res.json().then((data) => 
+          setCharacters([...characters , data]))
+      })
+      //.then(() => setCharacters([...characters, person]))
+      .catch((error) => {
+        console.log(error);
+      })
+    }
 
 
 return (
