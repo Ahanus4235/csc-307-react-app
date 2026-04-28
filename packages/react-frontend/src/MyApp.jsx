@@ -26,7 +26,7 @@ function MyApp() {
     });
 
 
-    deleteUser(charToRemove, characters[index].id)
+    deleteUser(charToRemove, characters[index]._id)
     .then((res) => {
       if (res.status==204){
         const updated = characters.filter((character, i) => {
@@ -38,11 +38,6 @@ function MyApp() {
     .catch((error) => {console.log(error);});
   }
 
-  function updateList(person) {
-  setCharacters([...characters, person]);
-  
-
-  }
   function fetchUsers() {
     const promise = fetch("http://localhost:8000/users");
     return promise;
